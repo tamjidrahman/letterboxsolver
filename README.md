@@ -42,9 +42,29 @@ TODO(tamjid): set max stages
 ### Optimizations
 
 #### Pruning between stages
-Two states are equally cost-efficient if they use the same number of words to achieve the same set of letters remaining.
+Two states are equally cost-efficient if they use the same number of words to achieve the same set of letters remaining, and the last word ends with the same letter.
 
 If we do not care for populating all possible solutions, a sequence of words that covers fewer letters than another sequence in the same stage may be removed from consideration.
 
 ## The Code
 I chose Rust as a way to learn this language! Code Reviews welcome.
+
+### Getting Started
+
+1. ```cargo run```
+2. Follow the prompts!
+
+```
+➜  letterboxsolver git:(main) ✗ cargo run
+    Finished dev [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/letterboxsolver`
+-------Loading dictionary from words.txt complete!-------
+Enter letters on side 1. (e.g.: xyz) :jli
+Enter letters on side 2. (e.g.: xyz) :cud
+Enter letters on side 3. (e.g.: xyz) :btk
+Enter letters on side 4. (e.g.: xyz) :asr
+
+
+Solving [['j', 'l', 'i'], ['c', 'u', 'd'], ['b', 't', 'k'], ['a', 's', 'r']]
+Solution: ["disturb", "blackjack"]
+```
