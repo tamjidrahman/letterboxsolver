@@ -3318,7 +3318,6 @@ aphelion
 aphid
 aphids
 aphis
-aphonia
 aphorise
 aphorised
 aphorises
