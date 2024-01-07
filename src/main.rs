@@ -9,7 +9,7 @@ use util::read_csv;
 use word::Word;
 use letterboxsolver::LetterBoxSolver;
 
-const DICTIONARY_PATH: &str = "words.txt";
+const DICTIONARY_PATH: &str = "words_debug.txt";
 
 fn main() {
 

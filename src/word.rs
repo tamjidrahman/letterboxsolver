@@ -46,3 +46,8 @@ impl Word {
     }
 
 }
+
+#[macro_export]
+macro_rules! words {
+    (x: Vec<&str>) => {x.map(|x| Word::new(x.to_string())).collect()};
+}
