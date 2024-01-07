@@ -142,26 +142,30 @@ impl LetterBoxSolver {
 
         // Currently buggy - yde-ola-fin-uvt
 
-        // let mut new_states_filtered: Vec<(Vec<Word>, HashSet<char>, Option<char>)> = vec![];
+        let mut new_states_filtered: Vec<(Vec<Word>, HashSet<char>, Option<char>)> = vec![];
 
-        // for new_state1 in new_states.iter(){
-        //     let mut is_redundant:bool = false;
-        //     for new_state2 in new_states.iter(){
-        //         if new_state1.2 != new_state2.2 || new_state1.0.iter().nth_back(0).unwrap_or(&Word::new("".to_string())).word == new_state2.0.iter().nth_back(0).unwrap_or(&Word::new("".to_string())).word {
-        //             continue;
-        //         }
+        for new_state1 in new_states.iter(){
+            let mut is_redundant:bool = false;
+            for new_state2 in new_states.iter(){
+                
+                // Skip pruning if the last character is different in each state
+                if new_state1.2 != new_state2.2{
+                    continue;
+                }
 
-        //         else if new_state1.1.is_superset(&new_state2.1){
-        //             is_redundant = true;
-        //         }
-        //     }
+                // Prune if new_state2 letters remaining is a strict superset of new_state1 letters remaining
+                else if new_state1.1.is_superset(&new_state2.1) && !(new_state1.1.is_subset(&new_state2.1)){
+                    is_redundant = true;
+                    break;
+                }
+            }
 
-        //     if !is_redundant{
-        //         new_states_filtered.push(new_state1.clone());
-        //     }
-        // }
+            if !is_redundant{
+                new_states_filtered.push(new_state1.clone());
+            }
+        }
 
-        return new_states;
+        return new_states_filtered;
 
     }
 }
@@ -182,13 +186,11 @@ mod tests {
         let (word, _letters, _character) = state;
         return word.iter().map(|w| w.word.to_string()).collect()
     }
-
-
     
     #[test]
     fn test_generate_next_states_from_state() {
 
-        let dict1: Vec<Word> = vec!["novy", "novelty", "foundation"].iter().map(|&s| Word::new(s.to_string())).collect();
+        let dict1: Vec<Word> = vec!["novy", "novelty", "naively", "foundation"].iter().map(|&s| Word::new(s.to_string())).collect();
         let sides1: Vec<Vec<char>> = vec![
             vec!['y', 'd', 'e'],
             vec!['o', 'l', 'a'],
@@ -204,14 +206,14 @@ mod tests {
 
 
         let possible_first_states = solver1.generate_next_states_from_state(&vec![], &letters_remaining, None);
-        assert_eq!(generate_word_sequences_from_stage(&possible_first_states), vec![vec!["novelty"], vec!["foundation"]]); // foundation or novelty are valid first answers. novy gets pruned by novelty
+        assert_eq!(generate_word_sequences_from_stage(&possible_first_states), vec![vec!["novelty"], vec!["naively"], vec!["foundation"]]); // foundation or novelty or naively are valid first answers. novy gets pruned by novelty
 
         let dead_end_state = solver1.generate_next_states_from_state(&vec![Word::new("novelty".to_string())], &letters_remaining, Some('y'));
         let dead_state: Vec<Vec<String>> = vec![];
-        assert_eq!(generate_word_sequences_from_stage(&dead_end_state), dead_state); // foundation or novelty are valid first answers. novy gets pruned by novelty
+        assert_eq!(generate_word_sequences_from_stage(&dead_end_state), dead_state); // starting with a y leads to no possible steps
 
         let penultimate_state = solver1.generate_next_states_from_state(&vec![Word::new("foundation".to_string())], &letters_remaining, Some('n'));
-        assert_eq!(generate_word_sequences_from_stage(&penultimate_state), vec![vec!["foundation", "novelty"]]); // one possible answer (novelty) after foundation. novy gets pruned by novelty
+        assert_eq!(generate_word_sequences_from_stage(&penultimate_state), vec![vec!["foundation", "novelty"], vec!["foundation", "naively"]]); // two possible answers, both which are equivalent. no tiebreak defined to prune one or other
 
    }
 
