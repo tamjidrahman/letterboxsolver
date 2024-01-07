@@ -75,8 +75,6 @@ impl LetterBoxSolver {
 
     pub fn solve(&self) -> Vec<Word>{
         
-        // println!("{:?}", allowed_edges.len());
-
         let mut letters_remaining: HashSet<char> = HashSet::new();
         for side in self.sides.iter(){
             letters_remaining.extend(side.iter().copied())
@@ -87,7 +85,7 @@ impl LetterBoxSolver {
 
         loop{
 
-            let new_states = self.update_states(states);
+            let new_states = self.generate_next_stage(states);
 
             let complete = new_states.iter()
             .filter(|(_words_used, letters_remaining, _starting_letter)| letters_remaining.iter().count() == 0)
@@ -102,18 +100,20 @@ impl LetterBoxSolver {
         }
     }
 
-    fn update_states(&self, states: Vec<(Vec<Word>, HashSet<char>, Option<char>)>) -> Vec<(Vec<Word>, HashSet<char>, Option<char>)>{
-        
+    fn generate_next_stage(&self, states: Vec<(Vec<Word>, HashSet<char>, Option<char>)>) -> Vec<(Vec<Word>, HashSet<char>, Option<char>)>{
+        /* A stage is a set of states. For each state, we want to apply generate_next_states_from_state, and flatten, to generate the next stage
+         */
         let new_states: Vec<(Vec<Word>, HashSet<char>, Option<char>)> = states.into_par_iter()
-        .map(|(words_used, letters_remaining, starting_letter)| self.solve_step(&words_used, &letters_remaining, starting_letter))
+        .map(|(words_used, letters_remaining, starting_letter)| self.generate_next_states_from_state(&words_used, &letters_remaining, starting_letter))
         .flat_map(|s| s)
         .collect();
 
         return new_states;
     }
 
-    fn solve_step(&self, words_used: &Vec<Word>, letters_remaining: &HashSet<char>, starting_letter: Option<char>) -> Vec<(Vec<Word>, HashSet<char>, Option<char>)>{
-
+    fn generate_next_states_from_state(&self, words_used: &Vec<Word>, letters_remaining: &HashSet<char>, starting_letter: Option<char>) -> Vec<(Vec<Word>, HashSet<char>, Option<char>)>{
+        /* One state can create many more states (i.e. there are many possible next words we can choose)
+         */
         let mut new_states: Vec<(Vec<Word>, HashSet<char>, Option<char>)> = vec![(vec![], letters_remaining.clone(), None)];
         
         let allowed_next_words = self.words
@@ -159,9 +159,6 @@ impl LetterBoxSolver {
             }
         }
 
-        
-
-        
         return new_states_filtered;
 
     }
