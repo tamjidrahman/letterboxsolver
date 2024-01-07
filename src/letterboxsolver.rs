@@ -3,7 +3,6 @@ use std::collections::HashSet;
 use rayon::prelude::*;
 
 use crate::word::Word;
-use crate::util::get_allowed_edges;
 
 trait Solver {
     fn solve(&self);
@@ -17,19 +16,64 @@ pub(crate) struct LetterBoxSolver {
 
 impl LetterBoxSolver {
 
-    pub fn new(words: Vec<Word>, sides: Vec<Vec<char>>) -> LetterBoxSolver{
+    pub fn new(dictionary: Vec<Word>, sides: Vec<Vec<char>>) -> LetterBoxSolver{
 
-        let allowed_edges = get_allowed_edges(&sides);
+        let allowed_edges = LetterBoxSolver::get_allowed_edges(&sides);
 
         LetterBoxSolver {
-            words,
+            words: dictionary,
             sides,
             allowed_edges,
         }
 
     }
 
-    pub fn solve(&self){
+    fn get_allowed_edges(sides: &Vec<Vec<char>>) -> HashSet<String>{
+        /* Generate allowed edges between letters from sides
+         */
+        let mut edges: HashSet<String> = HashSet::new();
+        for (i1, side1) in sides.iter().enumerate(){
+    
+            for letter1 in side1{
+                edges.insert(LetterBoxSolver::generate_edge_repr(Some(*letter1), None));
+                edges.insert(LetterBoxSolver::generate_edge_repr(None, Some(*letter1)));
+            }
+    
+            for (i2, side2) in sides.iter().enumerate(){
+                if i1 == i2{
+                    continue;
+                }
+                for letter1 in side1{
+                    for letter2 in side2{
+                        edges.insert(LetterBoxSolver::generate_edge_repr(Some(*letter1), Some(*letter2)));
+                    }
+    
+                }
+            }
+        }
+    
+        return edges
+    }
+
+    pub fn generate_edge_repr(letter1: Option<char>, letter2: Option<char>) -> String{
+        // Store magic of storing an edge as {letter1}-{letter2}, and treating blanks as _
+
+        let l1_repr = match letter1 {
+            None => '_',
+            Some(c) => c,
+        };
+
+        let l2_repr = match letter2 {
+            None => '_',
+            Some(c) => c,
+        };
+        
+        return format!("{l1_repr}-{l2_repr}")
+    }
+
+
+
+    pub fn solve(&self) -> Vec<Word>{
         
         // println!("{:?}", allowed_edges.len());
 
@@ -51,8 +95,7 @@ impl LetterBoxSolver {
             .nth(0);
 
             if complete.is_some(){
-                println!("{:?}", complete.unwrap());
-                break
+                return complete.unwrap().clone()
             }
             states = new_states;
 

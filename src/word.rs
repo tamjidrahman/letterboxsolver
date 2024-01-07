@@ -1,6 +1,6 @@
 use std::collections::HashSet;
 
-use crate::util::generate_edge_repr;
+use crate::letterboxsolver::LetterBoxSolver;
 
 
 // Type inference lets us omit an explicit type signature (which
@@ -16,15 +16,15 @@ pub(crate) struct Word {
 impl Word {
     pub fn new(word: String) -> Self {
 
-        let mut prev_letter = '_';
+        let mut prev_letter: Option<char> = None;
         let mut edges = HashSet::new();
         for letter in word.chars(){
-            edges.insert(generate_edge_repr(prev_letter, letter));
-            prev_letter = letter;
+            edges.insert(LetterBoxSolver::generate_edge_repr(prev_letter, Some(letter)));
+            prev_letter = Some(letter);
 
         } 
 
-        edges.insert(generate_edge_repr(prev_letter, '_'));
+        edges.insert(LetterBoxSolver::generate_edge_repr(prev_letter, None));
 
 
         Word {	
