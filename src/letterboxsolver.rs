@@ -140,8 +140,6 @@ impl LetterBoxSolver {
             ));
         }
 
-        // Currently buggy - yde-ola-fin-uvt
-
         let mut new_states_filtered: Vec<(Vec<Word>, HashSet<char>, Option<char>)> = vec![];
 
         for new_state1 in new_states.iter(){
