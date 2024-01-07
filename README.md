@@ -68,3 +68,7 @@ Enter letters on side 4. (e.g.: xyz) :asr
 Solving [['j', 'l', 'i'], ['c', 'u', 'd'], ['b', 't', 'k'], ['a', 's', 'r']]
 Solution: ["disturb", "blackjack"]
 ```
+
+### Running tests
+
+1. ```cargo test```
