@@ -3,21 +3,21 @@ mod util;
 mod word;
 
 use letterboxsolver::LetterBoxSolver;
-use word::load_words_from_csv;
+use word::{load_words_from_csv, load_words_from_url};
 
 use crate::util::download_file_if_not_exists;
 
 slint::include_modules!();
-const DICTIONARY_PATH: &str = "dictionary.txt";
+// const DICTIONARY_PATH: &str = "dictionary.txt";
 const DICTIONARY_URL: &str =
     "https://raw.githubusercontent.com/tamjidrahman/letterboxsolver/main/dictionary.txt";
+// const DICTIONARY_PATH: &str = "dictionary.txt";
 
 fn main() -> Result<(), slint::PlatformError> {
-    // if word.txt doesn't exist, download from github
-    download_file_if_not_exists(DICTIONARY_URL, DICTIONARY_PATH);
-
     // load dictionary
-    let dictionary = load_words_from_csv(DICTIONARY_PATH);
+    // download_file_if_not_exists(DICTIONARY_URL, DICTIONARY_PATH);
+    // let dictionary = load_words_from_csv(DICTIONARY_PATH);
+    let dictionary = load_words_from_url(DICTIONARY_URL);
 
     let ui = AppWindow::new()?;
 

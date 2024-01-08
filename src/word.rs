@@ -10,6 +10,16 @@ pub(crate) struct Word {
     edges: HashSet<String>,
 }
 
+pub fn load_words_from_url(url: &str) -> Vec<Word>{
+    
+    let resp = reqwest::blocking::get(url).unwrap();
+    let mut rdr = csv::Reader::from_reader(resp);
+    let words = rdr.records().map(|row| row.expect("failed to load").get(0).expect("a").to_string() ).map(|s| Word::new(s)).collect();
+    
+    return words
+
+}
+
 pub fn load_words_from_csv(filename: &str) -> Vec<Word>{
     let dictionary: Vec<Word> = read_csv(filename)
         .into_par_iter()
