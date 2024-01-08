@@ -3,7 +3,7 @@ name = "letterboxsolver"
 version = "0.1.0"
 edition = "2021"
 build = "build.rs"
-
+description = "Solve NYT letterbox game"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
@@ -15,3 +15,7 @@ text_io = "0.1.12"
 
 [build-dependencies]
 slint-build = "1.0"
+
+[package.metadata.bundle]
+name = "LetterBox Solver"
+identifier = "io.github.tamjidrahman.letterboxsolver"
