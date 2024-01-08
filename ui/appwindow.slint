@@ -1,0 +1,60 @@
+import { Button, VerticalBox, LineEdit , Spinner, HorizontalBox} from "std-widgets.slint";
+
+export component AppWindow inherits Window {
+    width: 900px;
+    title: "Letterbox Solver";
+
+    in-out property<string> solution: "solution";
+    property<bool> has_solution: false;
+    callback solve(string, string, string, string) -> string;
+    
+    VerticalBox {
+        Text {
+            text: "Enter the letters on each side below";
+            height: 70px;
+            font-size: 30px;
+        }
+        HorizontalBox {
+
+            side1 := LineEdit {
+                text: "yde";
+                width: 200px;
+                height: 70px;
+                font-size: 30px;
+            }
+            side2 := LineEdit {
+                text: "ola";
+                width: 200px;
+                height: 70px;
+                font-size: 30px;
+            }
+            side3 := LineEdit {
+                text: "fin";
+                width: 200px;
+                height: 70px;
+                font-size: 30px;
+            }
+            side4 := LineEdit {
+                text: "uvt";
+                width: 200px;
+                height: 70px;
+                font-size: 30px;
+            }
+        }
+        if has-solution:
+            Text {
+                text: solution;
+                height: 70px;
+                font-size: 30px;
+            }
+        
+        Button {
+            text: "Solve";
+            clicked => {
+                solution = root.solve(side1.text, side2.text, side3.text, side4.text);
+                root.has-solution = true;
+            }
+            height: 70px;
+        }
+    }
+}

@@ -1,11 +1,27 @@
 use std::collections::HashSet;
 
-use crate::letterboxsolver::LetterBoxSolver;
+use rayon::prelude::*;
+
+use crate::{letterboxsolver::LetterBoxSolver, util::read_csv};
 
 #[derive(Debug, Clone)]
 pub(crate) struct Word {
     pub word: String,
     edges: HashSet<String>,
+}
+
+pub fn load_words_from_csv(filename: &str) -> Vec<Word>{
+    let dictionary: Vec<Word> = read_csv(filename)
+        .into_par_iter()
+        .map(|w| Word::new(w.to_string()))
+        .collect();
+
+    println!(
+        "-------Loading dictionary from {} complete!-------",
+        filename
+    );
+
+    return dictionary;
 }
 
 impl Word {

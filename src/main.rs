@@ -1,45 +1,42 @@
 mod letterboxsolver;
 mod util;
 mod word;
-use text_io::read;
 
 use letterboxsolver::LetterBoxSolver;
-use rayon::prelude::*;
-use util::read_csv;
-use word::Word;
+use word::load_words_from_csv;
 
-const DICTIONARY_PATH: &str = "words.txt";
+use crate::util::download_file_if_not_exists;
 
-fn main() {
-    print!(
-        "-------Loading dictionary from {}-------\r",
-        DICTIONARY_PATH
-    );
-    let dictionary: Vec<Word> = read_csv(DICTIONARY_PATH)
-        .into_par_iter()
-        .map(|w| Word::new(w.to_string()))
-        .collect();
+slint::include_modules!();
+const DICTIONARY_PATH: &str = "dictionary.txt";
+const DICTIONARY_URL: &str =
+    "https://raw.githubusercontent.com/tamjidrahman/letterboxsolver/main/words.txt";
 
-    println!(
-        "-------Loading dictionary from {} complete!-------",
-        DICTIONARY_PATH
-    );
+fn main() -> Result<(), slint::PlatformError> {
+    // if word.txt doesn't exist, download from github
+    download_file_if_not_exists(DICTIONARY_URL, DICTIONARY_PATH);
 
-    // Read in problem structure from user input
-    let mut input: String;
-    let mut sides: Vec<Vec<char>> = vec![];
+    // load dictionary
+    let dictionary = load_words_from_csv(DICTIONARY_PATH);
 
-    for i in 0..4 {
-        print!("Enter letters on side {}. (e.g.: xyz) :", i + 1);
-        input = read!();
-        sides.push(input.chars().collect())
-    }
-    println!("\n\nSolving {sides:?}");
+    let ui = AppWindow::new()?;
 
-    // Construct game and solve
-    let solution = LetterBoxSolver::new(dictionary, sides).solve();
+    ui.on_solve(move |side1, side2, side3, side4| {
+        let sides: Vec<Vec<char>> = vec![side1, side2, side3, side4]
+            .iter()
+            .map(|side| side.chars().collect())
+            .collect();
+        let solution = LetterBoxSolver::new(dictionary.clone(), sides).solve();
+        let solution_words: Vec<String> = solution.iter().map(|w| w.word.to_string()).collect();
+        let ui_solution: String = solution_words.iter().fold("".to_string(), |acc, s| {
+            if acc != "" {
+                format!("{}, {}", acc, s)
+            } else {
+                s.to_string()
+            }
+        });
+        return ui_solution.into();
+    });
 
-    // Print out solution
-    let solution_words: Vec<String> = solution.iter().map(|w| w.word.to_string()).collect();
-    println!("Solution: {:?}", solution_words);
+    ui.run()
 }
