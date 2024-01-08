@@ -10,7 +10,7 @@ use crate::util::download_file_if_not_exists;
 slint::include_modules!();
 const DICTIONARY_PATH: &str = "dictionary.txt";
 const DICTIONARY_URL: &str =
-    "https://raw.githubusercontent.com/tamjidrahman/letterboxsolver/main/words.txt";
+    "https://raw.githubusercontent.com/tamjidrahman/letterboxsolver/main/dictionary.txt";
 
 fn main() -> Result<(), slint::PlatformError> {
     // if word.txt doesn't exist, download from github
